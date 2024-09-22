@@ -3,37 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Notes - R.S. Model Senior Secondary School</title>
-    
-    <!-- Open Graph Meta Tags for social media previews -->
-    <meta property="og:title" content="School Notes - R.S. Model Senior Secondary School">
-    <meta property="og:description" content="Download notes for Classes 9 to 12. Choose your class and subject to get study materials in PDF format from R.S. Model Senior Secondary School.">
-    <meta property="og:image" content="https://yourwebsite.com/path-to-image.jpg">
-    <meta property="og:url" content="https://yourwebsite.com">
-    <meta name="twitter:card" content="summary_large_image">
-    
-    <!-- Meta description for search engines -->
-    <meta name="description" content="Download notes for Classes 9 to 12 from R.S. Model Senior Secondary School. Choose your class and subject to access PDF downloads.">
-
-    <!-- Favicon -->
-    <link rel="icon" href="https://yourwebsite.com/path-to-favicon.ico" type="image/x-icon">
-
-    <!-- Add Bootstrap CSS -->
+    <title>Download Notes</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom right, #3a6073, #3a947d); /* Gradient Background */
+            background: linear-gradient(to bottom right, #3a6073, #3a947d);
             color: #fff;
             min-height: 100vh;
         }
 
         .container {
             padding: 30px;
-            background-color: #ffffff; /* Solid white background for contrast */
+            background-color: #ffffff;
             border-radius: 15px;
             margin: 50px auto;
             max-width: 900px;
@@ -42,33 +26,33 @@
 
         h1, h2 {
             text-align: center;
-            color: #2c3e50; /* Darker text for headings */
+            color: #2c3e50;
         }
 
         .class-container, .subject-container, .file-container {
             margin-top: 30px;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8); /* Slightly opaque white */
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
-            background-color: #ff5722; /* Orange Color for Buttons */
+            background-color: #ff5722;
             border: none;
         }
 
         .btn-primary:hover {
-            background-color: #ff7043; /* Lighter orange on hover */
+            background-color: #ff7043;
         }
 
         .btn-secondary {
-            background-color: #4CAF50; /* Green Color for Buttons */
+            background-color: #4CAF50;
             border: none;
         }
 
         .btn-secondary:hover {
-            background-color: #66bb6a; /* Lighter Green */
+            background-color: #66bb6a;
         }
 
         .school-info {
@@ -78,7 +62,7 @@
         }
 
         a {
-            color: #ffeb3b; /* Link color */
+            color: #ffeb3b;
             text-decoration: none;
         }
 
@@ -86,7 +70,6 @@
             text-decoration: underline;
         }
 
-        /* Loading spinner */
         .spinner-border {
             display: none;
         }
@@ -95,7 +78,6 @@
             display: inline-block;
         }
 
-        /* Responsive design */
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -105,8 +87,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>School Notes</h1>
-        <p class="school-info">R.S. Model Senior Secondary School <br> Shashtri Nagar, Ludhiana, Punjab <br> Managed by Arya Samaj Model Town</p>
+        <h1>R.S. Model Senior Secondary School</h1>
+        <p class="school-info">Located in Shashtri Nagar, Ludhiana, Punjab <br> Managed by Arya Samaj Model Town</p>
         
         <div id="class-container" class="class-container text-center">
             <h2>Select Your Class</h2>
@@ -158,11 +140,11 @@
             const spinner = document.querySelector('.spinner-border');
 
             fileListDiv.innerHTML = '';
-            spinner.parentElement.classList.add('loading'); // Show loading spinner
+            spinner.parentElement.classList.add('loading');
 
             fetchFiles(className, subject)
                 .then(files => {
-                    spinner.parentElement.classList.remove('loading'); // Hide loading spinner
+                    spinner.parentElement.classList.remove('loading');
                     fileListDiv.classList.remove("hidden");
 
                     if (files.length > 0) {
@@ -185,7 +167,7 @@
                     }
                 })
                 .catch(error => {
-                    spinner.parentElement.classList.remove('loading'); // Hide loading spinner
+                    spinner.parentElement.classList.remove('loading');
                     fileListDiv.innerHTML = '<div class="alert alert-danger">Error loading files.</div>';
                 });
         }
