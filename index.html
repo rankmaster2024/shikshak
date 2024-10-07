@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>VidyaVikalp - Your Educational Path</title>
     <style>
         /* General Styles */
@@ -161,7 +160,8 @@
         // Function to create and insert school cards
         function createCards(schools) {
             const container = document.getElementById('cards-container');
-            schools.forEach(school => {
+            container.innerHTML = ''; // Clear container before adding new cards
+            schools.forEach((school, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
@@ -169,6 +169,7 @@
                     <h3>${school.name}</h3>
                     <p>${school.location}</p>
                     <p>${school.description}</p>
+                    <a href="school.html?index=${index}">More Info</a> <!-- Link to school.html with index -->
                 `;
                 container.appendChild(card);
             });
@@ -211,8 +212,6 @@
                 school.name.toLowerCase().includes(searchInput) || 
                 school.location.toLowerCase().includes(searchInput)
             );
-            const container = document.getElementById('cards-container');
-            container.innerHTML = ''; // Clear previous cards
             createCards(filteredSchools); // Recreate the cards with the filtered data
         }
 
