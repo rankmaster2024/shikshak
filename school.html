@@ -5,21 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Details</title>
     <style>
-        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: #007BFF;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .school-info {
+            margin: 10px 0;
+        }
+
+        .school-info p {
+            margin: 5px 0;
+            padding: 8px;
+            background: #f9f9f9;
+            border-left: 5px solid #007BFF;
+        }
+
+        .school-info h2 {
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #007BFF;
+            color: #fff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <h1 id="school-name"></h1>
-    <img id="school-image" alt="">
-    <p id="school-description"></p>
-    <p id="school-location"></p>
-    <p id="school-contact"></p>
-    <p id="school-address"></p>
-    <p id="school-principal"></p>
-    <p id="school-affiliations"></p>
-    <p id="school-grades"></p>
-    <p id="school-fees"></p>
+    <header>
+        <h1>School Details</h1>
+    </header>
+
+    <div class="container">
+        <img id="school-image" alt="">
+        <h2 id="school-name"></h2>
+        <div class="school-info">
+            <p id="school-description"></p>
+            <p id="school-location"></p>
+            <p id="school-contact"></p>
+            <p id="school-address"></p>
+            <p id="school-principal"></p>
+            <p id="school-affiliations"></p>
+            <p id="school-grades"></p>
+            <p id="school-fees"></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Educational Institutions. All rights reserved.</p>
+    </footer>
 
     <script>
         const jsonUrl = 'https://raw.githubusercontent.com/DEEPAKMATHUR0/schools.json/main/schools.json';
@@ -35,7 +108,7 @@
                     document.getElementById('school-name').textContent = school.name;
                     document.getElementById('school-image').src = school.image;
                     document.getElementById('school-description').textContent = school.description;
-                    document.getElementById('school-location').textContent = school.location;
+                    document.getElementById('school-location').textContent = `Location: ${school.location}`;
                     document.getElementById('school-contact').textContent = `Contact: ${school.contact}`;
                     document.getElementById('school-address').textContent = `Address: ${school.address}`;
                     document.getElementById('school-principal').textContent = `Principal: ${school.principal_name}`;
