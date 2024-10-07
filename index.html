@@ -159,20 +159,20 @@
 
         // Function to create and insert school cards
         function createCards(schools) {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = ''; // Clear container before adding new cards
-            schools.forEach((school, index) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${school.image}" alt="${school.name}">
-                    <h3>${school.name}</h3>
-                    <p>${school.location}</p>
-                    <p>${school.description}</p>
-                    <a href="school.html?index=${index}">More Info</a> <!-- Link to school.html with index -->
-                `;
-                container.appendChild(card);
-            });
+    const container = document.getElementById('cards-container');
+    container.innerHTML = ''; // Clear container before adding new cards
+    schools.forEach(school => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <img src="${school.image}" alt="${school.name}">
+            <h3>${school.name}</h3>
+            <p>${school.location}</p>
+            <p>${school.description}</p>
+            <a href="school.html?code=${school.schoolCode}">More about ${school.name}</a>
+        `;
+        container.appendChild(card);
+    });
         }
 
         // Load more schools when the user scrolls near the bottom
