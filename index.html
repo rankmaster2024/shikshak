@@ -278,18 +278,18 @@
     </div>
 
     <script>
-       // Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyB4NItccmgoqliGV4tgvIDSlf02dpVKrX0",
-    authDomain: "vidyalayavikalp-21b4a.firebaseapp.com",
-    projectId: "vidyalayavikalp-21b4a",
-    storageBucket: "vidyalayavikalp-21b4a.appspot.com",
-    messagingSenderId: "190167801890",
-    appId: "1:190167801890:web:4382c8203df30587f1aa7b",
-    measurementId: "G-CW2L8NGEJL"
-};
 
-// Initialize Firebase
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDsXECMDb6tGR5_uUXP71tfW2fkrb7QoWY",
+  authDomain: "rankmaster-2024.firebaseapp.com",
+  projectId: "rankmaster-2024",
+  storageBucket: "rankmaster-2024.appspot.com",
+  messagingSenderId: "713867895802",
+  appId: "1:713867895802:web:69d025be69e85b8bb1ba43",
+  measurementId: "G-ZPX1TJ8Y9F"
+};// Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
@@ -324,7 +324,7 @@ document.querySelector('.register-btn').addEventListener('click', async (event) 
         localStorage.setItem('userEmail', email);
         // You can save additional user info in the Firestore if needed
         // Redirect to the dashboard page after registration
-        window.location.href = 'dashboard.html'; // Replace with your dashboard URL
+        window.location.href = 'Index.html'; // Replace with your dashboard URL
     } catch (error) {
         console.error('Registration error:', error);
         alert(error.message);
