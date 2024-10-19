@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student</title>
+
+    <!-- Import Firebase App -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
+            authDomain: "rankmaster-2007.firebaseapp.com",
+            projectId: "rankmaster-2007",
+            storageBucket: "rankmaster-2007.appspot.com",
+            messagingSenderId: "481619433177",
+            appId: "1:481619433177:web:5be2893aa094dbcc2b10c8",
+            measurementId: "G-NXE1T8RZ7H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        async function addStudent(event) {
+            event.preventDefault(); // Prevent the form from refreshing the page
+
+            const email = document.getElementById("studentEmail").value;
+            const password = document.getElementById("studentPassword").value;
+            const name = document.getElementById("studentName").value;
+            const userEmail = localStorage.getItem("userEmail"); // Get the logged-in teacher's email
+
+            try {
+                // Create user in Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log("Student added:", userCredential.user);
+
+                // Add student data to Firestore
+                await setDoc(doc(db, "students", userCredential.user.uid), {
+                    email: email,
+                    name: name,
+                    class: userEmail.split('@')[0] // Assuming the class is derived from the teacher's email prefix
+                });
+
+                alert("Student added successfully!");
+                window.location.href = "teach.html"; // Redirect back to the teacher page
+            } catch (error) {
+                console.error("Error adding student:", error);
+                alert("Error adding student: " + error.message);
+            }
+        }
+
+        window.addStudent = addStudent;
+    </script>
+</head>
+<body>
+    <h1>Add Student</h1>
+
+    <!-- Add Student Form -->
+    <form id="addStudentForm" onsubmit="addStudent(event)">
+        <div>
+            <label for="studentEmail">Student Email:</label>
+            <input type="email" id="studentEmail" required>
+        </div>
+        <div>
+            <label for="studentPassword">Password:</label>
+            <input type="password" id="studentPassword" required>
+        </div>
+        <div>
+            <label for="studentName">Student Name:</label>
+            <input type="text" id="studentName" required>
+        </div>
+        <button type="submit">Add Student</button>
+    </form>
+</body>
+</html>
