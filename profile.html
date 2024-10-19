@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <!-- Import Firebase App and Firestore -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
+            authDomain: "rankmaster-2007.firebaseapp.com",
+            projectId: "rankmaster-2007",
+            storageBucket: "rankmaster-2007.appspot.com",
+            messagingSenderId: "481619433177",
+            appId: "1:481619433177:web:5be2893aa094dbcc2b10c8",
+            measurementId: "G-NXE1T8RZ7H"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); // Initialize Firestore
+
+        // Function to load user data from Firestore
+        async function loadProfile() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                document.getElementById("message").innerText = "No user logged in.";
+                return;
+            }
+
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById("name").innerText = `Name: ${userData.name}`;
+                    document.getElementById("fatherName").innerText = `Father's Name: ${userData.fatherName}`;
+                    document.getElementById("motherName").innerText = `Mother's Name: ${userData.motherName}`;
+                    document.getElementById("dob").innerText = `Date of Birth: ${userData.dob}`;
+                    document.getElementById("class").innerText = `Class: ${userData.class}`;
+                    document.getElementById("section").innerText = `Section: ${userData.section}`;
+                } else {
+                    document.getElementById("message").innerText = "User data not found.";
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                document.getElementById("message").innerText = "Error loading user data.";
+            }
+        }
+
+        // Attach loadProfile function to window load event
+        window.onload = loadProfile;
+    </script>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <p id="name"></p>
+    <p id="fatherName"></p>
+    <p id="motherName"></p>
+    <p id="dob"></p>
+    <p id="class"></p>
+    <p id="section"></p>
+
+    <!-- Button to go to Edit Page -->
+    <button onclick="window.location.href='edit.html'">Edit Profile</button>
+
+    <!-- Display messages -->
+    <p id="message"></p>
+</body>
+</html>
