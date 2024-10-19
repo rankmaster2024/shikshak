@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard - Student Info</title>
-
-    <!-- Firebase SDK -->
+    <title>Teacher Page</title>
+    
+    <!-- Import Firebase App -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
             authDomain: "rankmaster-2007.firebaseapp.com",
@@ -22,58 +21,45 @@
             measurementId: "G-NXE1T8RZ7H"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);  // Firebase Authentication
-        const db = getFirestore(app); // Firestore Database
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Function to fetch student data
         async function fetchStudents() {
-            const user = auth.currentUser;
+            const userEmail = localStorage.getItem("userEmail");
 
-            if (user) {
-                // Fetch the teacher's assigned class
-                const teacherEmail = user.email;
-                const teacherDoc = await getDocs(collection(db, "teachers"));
+            if (!userEmail) {
+                window.location.href = "login.html"; // Redirect if not logged in
+                return;
+            }
 
-                let teacherClass = '';
-                teacherDoc.forEach(doc => {
-                    if (doc.id === teacherEmail) {
-                        teacherClass = doc.data().class; // Get assigned class
-                    }
+            // Assuming the class for the teacher is stored in Firestore
+            const classQuery = query(collection(db, "teachers"), where("email", "==", userEmail));
+            const classSnapshot = await getDocs(classQuery);
+            let teacherClass;
+
+            classSnapshot.forEach((doc) => {
+                teacherClass = doc.data().class; // Get the class assigned to the teacher
+            });
+
+            if (teacherClass) {
+                const studentsQuery = query(collection(db, "students"), where("class", "==", teacherClass));
+                const studentsSnapshot = await getDocs(studentsQuery);
+
+                studentsSnapshot.forEach((doc) => {
+                    console.log(doc.id, " => ", doc.data()); // Log each student document
+                    // Display student info on the page
                 });
-
-                // Query students based on the teacher's assigned class
-                const studentsRef = collection(db, "students");
-                const q = query(studentsRef, where("class", "==", teacherClass));
-                const querySnapshot = await getDocs(q);
-
-                // Display student data
-                const studentList = document.getElementById("studentList");
-                querySnapshot.forEach((doc) => {
-                    const studentData = doc.data();
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${studentData.name}, Father's Name: ${studentData.fatherName}, Class: ${studentData.class}, Section: ${studentData.section}`;
-                    studentList.appendChild(listItem);
-                });
-
-                if (querySnapshot.empty) {
-                    studentList.innerHTML = "<li>No students found for this class.</li>";
-                }
             } else {
-                window.location.href = "index.html"; // Redirect to login if not authenticated
+                console.log("No class found for the teacher.");
             }
         }
 
-        // Call fetchStudents when the page loads
         window.onload = fetchStudents;
     </script>
 </head>
 <body>
     <h1>Teacher Dashboard</h1>
-    <h2>Student List</h2>
-    <ul id="studentList">
-        <!-- Student details will be populated here -->
-    </ul>
+    <div id="studentList"></div>
 </body>
 </html>
