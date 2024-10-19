@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Page</title>
-    
-    <!-- Import Firebase App -->
+    <title>Teacher Dashboard</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
@@ -29,13 +27,14 @@
             const userEmail = localStorage.getItem("userEmail");
 
             if (!userEmail) {
-                window.location.href = "index.html"; // Redirect if not logged in
+                window.location.href = "login.html"; // Redirect if not logged in
                 return;
             }
 
             // Fetch the class assigned to the teacher
             const classQuery = query(collection(db, "teachers"), where("email", "==", userEmail));
             const classSnapshot = await getDocs(classQuery);
+
             let teacherClass;
 
             classSnapshot.forEach((doc) => {
@@ -66,6 +65,6 @@
 <body>
     <h1>Teacher Dashboard</h1>
     <div id="studentList"></div>
-    <button id="addStudentBtn" onclick="window.location.href='addstu.html'">Add Student</button>
+    <button onclick="window.location.href='addstu.html'">Add Student</button>
 </body>
 </html>
