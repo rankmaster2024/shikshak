@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
+    <title>Teacher Dashboard - Student Info</title>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Firebase configuration
@@ -24,93 +24,56 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const auth = getAuth(app);  // Firebase Authentication
+        const db = getFirestore(app); // Firestore Database
 
-        // Function to display student information
-        async function loadStudents(teacherClass) {
-            const studentsTable = document.getElementById("studentsTable");
-            studentsTable.innerHTML = ''; // Clear previous data
+        // Function to fetch student data
+        async function fetchStudents() {
+            const user = auth.currentUser;
 
-            // Query Firestore for all students in the teacher's class
-            const q = query(collection(db, "users"), where("class", "==", teacherClass));
-            const querySnapshot = await getDocs(q);
+            if (user) {
+                // Fetch the teacher's assigned class
+                const teacherEmail = user.email;
+                const teacherDoc = await getDocs(collection(db, "teachers"));
 
-            if (querySnapshot.empty) {
-                studentsTable.innerHTML = '<tr><td colspan="5">No students found for this class.</td></tr>';
-                return;
-            }
-
-            // Populate the table with student data
-            querySnapshot.forEach((doc) => {
-                const student = doc.data();
-                const row = `
-                    <tr>
-                        <td>${student.name}</td>
-                        <td>${student.fatherName}</td>
-                        <td>${student.motherName}</td>
-                        <td>${student.dob}</td>
-                        <td>${student.section}</td>
-                    </tr>
-                `;
-                studentsTable.insertAdjacentHTML('beforeend', row);
-            });
-        }
-
-        // Function to handle fetching the teacher's class and loading students
-        async function loadTeacherData() {
-            // Get the currently signed-in user
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const teacherEmail = user.email;
-
-                    // Fetch the teacher's class from Firestore based on their email
-                    const teacherDocRef = doc(db, "teachers", teacherEmail);
-                    const teacherDoc = await getDoc(teacherDocRef);
-
-                    if (teacherDoc.exists()) {
-                        const teacherData = teacherDoc.data();
-                        const teacherClass = teacherData.class;  // Assuming class is stored under "class"
-
-                        // Display teacher's class info
-                        document.getElementById("teacherInfo").innerText = `You are the class incharge of: ${teacherClass}`;
-
-                        // Load students for this class
-                        loadStudents(teacherClass);
-                    } else {
-                        document.getElementById("teacherInfo").innerText = "Class information not found!";
+                let teacherClass = '';
+                teacherDoc.forEach(doc => {
+                    if (doc.id === teacherEmail) {
+                        teacherClass = doc.data().class; // Get assigned class
                     }
-                } else {
-                    window.location.href = "login.html";  // Redirect to login if not signed in
+                });
+
+                // Query students based on the teacher's assigned class
+                const studentsRef = collection(db, "students");
+                const q = query(studentsRef, where("class", "==", teacherClass));
+                const querySnapshot = await getDocs(q);
+
+                // Display student data
+                const studentList = document.getElementById("studentList");
+                querySnapshot.forEach((doc) => {
+                    const studentData = doc.data();
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${studentData.name}, Father's Name: ${studentData.fatherName}, Class: ${studentData.class}, Section: ${studentData.section}`;
+                    studentList.appendChild(listItem);
+                });
+
+                if (querySnapshot.empty) {
+                    studentList.innerHTML = "<li>No students found for this class.</li>";
                 }
-            });
+            } else {
+                window.location.href = "login.html"; // Redirect to login if not authenticated
+            }
         }
 
-        // Call the function to load teacher data on page load
-        window.addEventListener('load', loadTeacherData);
+        // Call fetchStudents when the page loads
+        window.onload = fetchStudents;
     </script>
 </head>
 <body>
     <h1>Teacher Dashboard</h1>
-
-    <!-- Teacher Info Section -->
-    <p id="teacherInfo">Loading your class information...</p>
-
-    <!-- Table to Display Students -->
     <h2>Student List</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Father's Name</th>
-                <th>Mother's Name</th>
-                <th>Date of Birth</th>
-                <th>Section</th>
-            </tr>
-        </thead>
-        <tbody id="studentsTable">
-            <!-- Student data will be populated here dynamically -->
-        </tbody>
-    </table>
+    <ul id="studentList">
+        <!-- Student details will be populated here -->
+    </ul>
 </body>
 </html>
