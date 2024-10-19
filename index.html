@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-
-    <!-- Import Firebase App -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getFirestore, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
@@ -21,41 +20,49 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);  // Initialize Firebase Authentication
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        async function loginUser(event) {
-            event.preventDefault(); // Prevent the form from refreshing the page
-
+        async function login(event) {
+            event.preventDefault();
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                console.log("User signed in:", userCredential.user);
+                console.log("Logged in:", userCredential.user);
 
-                // Save user info to local storage
-                localStorage.setItem("userEmail", email);
+                // Check if the logged-in user is a teacher
+                const userQuery = query(collection(db, "teachers"), where("email", "==", email));
+                const querySnapshot = await getDocs(userQuery);
 
-                // Redirect based on user role
-                if (email.endsWith("2024@gmail.com")) { // Check for teacher's email
+                if (!querySnapshot.empty) {
+                    // User is a teacher
+                    localStorage.setItem("userEmail", email);
                     window.location.href = "teach.html"; // Redirect to teacher page
                 } else {
-                    window.location.href = "profile.html"; // Redirect to profile page
+                    // User is not a teacher; check if they are a student
+                    const studentQuery = query(collection(db, "students"), where("email", "==", email));
+                    const studentSnapshot = await getDocs(studentQuery);
+
+                    if (!studentSnapshot.empty) {
+                        // User is a student
+                        localStorage.setItem("userEmail", email);
+                        window.location.href = "student.html"; // Redirect to student page
+                    } else {
+                        alert("No user found with this email.");
+                    }
                 }
             } catch (error) {
-                console.error("Error logging in:", error);
-                alert("Login failed: " + error.message);
+                console.error("Error during login:", error);
+                alert("Error: " + error.message);
             }
         }
-
-        window.loginUser = loginUser;
     </script>
 </head>
 <body>
     <h1>Login</h1>
-
-    <!-- Login Form -->
-    <form id="loginForm" onsubmit="loginUser(event)">
+    <form onsubmit="login(event)">
         <div>
             <label for="email">Email:</label>
             <input type="email" id="email" required>
