@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+
+    <!-- Import Firebase App and Firestore -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
+            authDomain: "rankmaster-2007.firebaseapp.com",
+            projectId: "rankmaster-2007",
+            storageBucket: "rankmaster-2007.appspot.com",
+            messagingSenderId: "481619433177",
+            appId: "1:481619433177:web:5be2893aa094dbcc2b10c8",
+            measurementId: "G-NXE1T8RZ7H"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); // Initialize Firestore
+
+        // Function to load existing user data into form
+        async function loadUserData() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                document.getElementById("message").innerText = "No user logged in.";
+                return;
+            }
+
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById("name").value = userData.name;
+                    document.getElementById("fatherName").value = userData.fatherName;
+                    document.getElementById("motherName").value = userData.motherName;
+                    document.getElementById("dob").value = userData.dob;
+                    document.getElementById("class").value = userData.class;
+                    document.getElementById("section").value = userData.section;
+                } else {
+                    document.getElementById("message").innerText = "User data not found.";
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                document.getElementById("message").innerText = "Error loading user data.";
+            }
+        }
+
+        // Function to update user data in Firestore
+        async function updateProfile(event) {
+            event.preventDefault();
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                document.getElementById("message").innerText = "No user logged in.";
+                return;
+            }
+
+            const name = document.getElementById("name").value;
+            const fatherName = document.getElementById("fatherName").value;
+            const motherName = document.getElementById("motherName").value;
+            const dob = document.getElementById("dob").value;
+            const userClass = document.getElementById("class").value;
+            const section = document.getElementById("section").value;
+
+            try {
+                await updateDoc(doc(db, "users", userId), {
+                    name: name,
+                    fatherName: fatherName,
+                    motherName: motherName,
+                    dob: dob,
+                    class: userClass,
+                    section: section
+                });
+
+                document.getElementById("message").innerText = "Profile updated successfully!";
+                document.getElementById("message").style.color = "green";
+
+                // Redirect to profile.html after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 2000); // 2 second delay before redirecting to profile.html
+
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                document.getElementById("message").innerText = "Error updating profile.";
+                document.getElementById("message").style.color = "red";
+            }
+        }
+
+        // Attach functions to window load and form submit events
+        window.onload = loadUserData;
+        window.updateProfile = updateProfile;
+    </script>
+</head>
+<body>
+    <h1>Edit Profile</h1>
+    <form id="editForm" onsubmit="updateProfile(event)">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+        </div>
+        <div>
+            <label for="fatherName">Father's Name:</label>
+            <input type="text" id="fatherName" required>
+        </div>
+        <div>
+            <label for="motherName">Mother's Name:</label>
+            <input type="text" id="motherName" required>
+        </div>
+        <div>
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" required>
+        </div>
+        <div>
+            <label for="class">Class:</label>
+            <input type="text" id="class" required>
+        </div>
+        <div>
+            <label for="section">Section:</label>
+            <input type="text" id="section" required>
+        </div>
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <!-- Display success or error messages -->
+    <p id="message"></p>
+</body>
+</html>
