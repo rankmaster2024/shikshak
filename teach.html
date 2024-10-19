@@ -29,11 +29,11 @@
             const userEmail = localStorage.getItem("userEmail");
 
             if (!userEmail) {
-                window.location.href = "login.html"; // Redirect if not logged in
+                window.location.href = "index.html"; // Redirect if not logged in
                 return;
             }
 
-            // Assuming the class for the teacher is stored in Firestore
+            // Fetch the class assigned to the teacher
             const classQuery = query(collection(db, "teachers"), where("email", "==", userEmail));
             const classSnapshot = await getDocs(classQuery);
             let teacherClass;
@@ -46,9 +46,14 @@
                 const studentsQuery = query(collection(db, "students"), where("class", "==", teacherClass));
                 const studentsSnapshot = await getDocs(studentsQuery);
 
+                const studentListDiv = document.getElementById("studentList");
+                studentListDiv.innerHTML = ""; // Clear the list
+
                 studentsSnapshot.forEach((doc) => {
-                    console.log(doc.id, " => ", doc.data()); // Log each student document
-                    // Display student info on the page
+                    const studentData = doc.data();
+                    const studentDiv = document.createElement("div");
+                    studentDiv.textContent = `Student Email: ${studentData.email}, Name: ${studentData.name}`;
+                    studentListDiv.appendChild(studentDiv); // Display each student document
                 });
             } else {
                 console.log("No class found for the teacher.");
@@ -61,5 +66,6 @@
 <body>
     <h1>Teacher Dashboard</h1>
     <div id="studentList"></div>
+    <button id="addStudentBtn" onclick="window.location.href='addstu.html'">Add Student</button>
 </body>
 </html>
