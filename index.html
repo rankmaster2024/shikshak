@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 
-    <!-- Firebase SDK -->
+    <!-- Import Firebase App -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
             authDomain: "rankmaster-2007.firebaseapp.com",
@@ -22,50 +20,42 @@
             measurementId: "G-NXE1T8RZ7H"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const auth = getAuth(app);  // Initialize Firebase Authentication
 
-        // Function to handle login
-        async function login(event) {
-            event.preventDefault();  // Prevent form submission from refreshing the page
+        async function loginUser(event) {
+            event.preventDefault(); // Prevent the form from refreshing the page
 
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
             try {
-                // Sign in with email and password
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+                console.log("User signed in:", userCredential.user);
 
-                // Check if the user is a teacher by looking for their email in the "teachers" collection
-                const teacherDocRef = doc(db, "teachers", email);
-                const teacherDocSnap = await getDoc(teacherDocRef);
+                // Save user info to local storage
+                localStorage.setItem("userEmail", email);
 
-                if (teacherDocSnap.exists()) {
-                    // User is a teacher, redirect to teach.html
-                    window.location.href = "teach.html";
+                // Redirect based on user role
+                if (email.endsWith("@school.com")) { // Check for teacher's email
+                    window.location.href = "teach.html"; // Redirect to teacher page
                 } else {
-                    // User is a regular user, redirect to profile.html
-                    window.location.href = "profile.html";
+                    window.location.href = "profile.html"; // Redirect to profile page
                 }
             } catch (error) {
-                console.error("Login error:", error);
-                document.getElementById("message").innerText = error.message;
-                document.getElementById("message").style.color = "red";
+                console.error("Error logging in:", error);
+                alert("Login failed: " + error.message);
             }
         }
 
-        // Attach the login function to the form onsubmit event
-        window.login = login;
+        window.loginUser = loginUser;
     </script>
 </head>
 <body>
     <h1>Login</h1>
 
     <!-- Login Form -->
-    <form id="loginForm" onsubmit="login(event)">
+    <form id="loginForm" onsubmit="loginUser(event)">
         <div>
             <label for="email">Email:</label>
             <input type="email" id="email" required>
@@ -76,8 +66,5 @@
         </div>
         <button type="submit">Login</button>
     </form>
-
-    <!-- Display success or error message -->
-    <p id="message"></p>
 </body>
 </html>
