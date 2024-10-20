@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
@@ -25,26 +25,21 @@
 
         async function addStudent(event) {
             event.preventDefault();
-
-            const email = document.getElementById("email").value;
             const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
             const classValue = document.getElementById("class").value;
+            const teacherEmail = localStorage.getItem("userEmail"); // Get the logged-in teacher's email
 
-            try {
-                // Store student data in Firestore
-                await setDoc(doc(db, "students", email), {
-                    email: email,
-                    name: name,
-                    class: classValue,
-                });
+            // Create a new student document
+            await setDoc(doc(db, "students", email), {
+                name: name,
+                email: email,
+                class: classValue,
+                teacherEmail: teacherEmail // Store the teacher's email for association
+            });
 
-                // Display success message and redirect to teach.html
-                alert("Student added successfully!");
-                window.location.href = "teach.html";
-            } catch (error) {
-                console.error("Error adding student:", error);
-                alert("Error: " + error.message);
-            }
+            alert("Student added successfully!");
+            window.location.href = "teach.html"; // Redirect back to teacher dashboard
         }
     </script>
 </head>
@@ -52,12 +47,12 @@
     <h1>Add Student</h1>
     <form onsubmit="addStudent(event)">
         <div>
-            <label for="email">Student Email:</label>
-            <input type="email" id="email" required>
-        </div>
-        <div>
             <label for="name">Student Name:</label>
             <input type="text" id="name" required>
+        </div>
+        <div>
+            <label for="email">Student Email:</label>
+            <input type="email" id="email" required>
         </div>
         <div>
             <label for="class">Class:</label>
@@ -65,6 +60,7 @@
         </div>
         <button type="submit">Add Student</button>
     </form>
-    <button onclick="window.location.href='teach.html'">Back to Teacher Dashboard</button>
+    <button onclick="window.location.href='teach.html'">Back to Dashboard</button>
+    <button onclick="window.location.href='index.html'">Logout</button> <!-- Redirect to login page -->
 </body>
 </html>
