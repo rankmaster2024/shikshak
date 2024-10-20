@@ -48,7 +48,7 @@
                     if (!studentSnapshot.empty) {
                         // User is a student
                         localStorage.setItem("userEmail", email);
-                        window.location.href = "profile.html?email=" + encodeURIComponent(email); // Redirect to student profile page
+                        window.location.href = "profile.html"; // Redirect to student's profile page
                     } else {
                         alert("No user found with this email.");
                     }
