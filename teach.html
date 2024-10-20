@@ -23,48 +23,45 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        async function fetchStudents() {
-            const userEmail = localStorage.getItem("userEmail");
+        async function loadStudents() {
+            const teacherEmail = localStorage.getItem("userEmail");
+            const teacherQuery = query(collection(db, "students"), where("teacherEmail", "==", teacherEmail));
+            const querySnapshot = await getDocs(teacherQuery);
 
-            if (!userEmail) {
-                window.location.href = "login.html"; // Redirect if not logged in
-                return;
-            }
+            const studentList = document.getElementById("studentList");
+            studentList.innerHTML = ""; // Clear existing list
 
-            // Fetch the class assigned to the teacher
-            const classQuery = query(collection(db, "teachers"), where("email", "==", userEmail));
-            const classSnapshot = await getDocs(classQuery);
-
-            let teacherClass;
-
-            classSnapshot.forEach((doc) => {
-                teacherClass = doc.data().class; // Get the class assigned to the teacher
-            });
-
-            if (teacherClass) {
-                const studentsQuery = query(collection(db, "students"), where("class", "==", teacherClass));
-                const studentsSnapshot = await getDocs(studentsQuery);
-
-                const studentListDiv = document.getElementById("studentList");
-                studentListDiv.innerHTML = ""; // Clear the list
-
-                studentsSnapshot.forEach((doc) => {
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
                     const studentData = doc.data();
-                    const studentDiv = document.createElement("div");
-                    studentDiv.textContent = `Student Email: ${studentData.email}, Name: ${studentData.name}`;
-                    studentListDiv.appendChild(studentDiv); // Display each student document
+                    const studentItem = document.createElement("div");
+                    studentItem.innerHTML = `
+                        <h3>${studentData.name}</h3>
+                        <p>Class: ${studentData.class}</p>
+                        <p>Email: ${studentData.email}</p>
+                        <button onclick="viewProfile('${studentData.email}')">View Profile</button>
+                    `;
+                    studentList.appendChild(studentItem);
                 });
             } else {
-                console.log("No class found for the teacher.");
+                studentList.innerHTML = "<p>No students found.</p>";
             }
         }
 
-        window.onload = fetchStudents;
+        function viewProfile(email) {
+            window.location.href = "profile.html?email=" + encodeURIComponent(email);
+        }
+
+        // Load students when the page is loaded
+        window.onload = loadStudents;
     </script>
 </head>
 <body>
     <h1>Teacher Dashboard</h1>
-    <div id="studentList"></div>
+    <div id="studentList">
+        <p>Loading students...</p>
+    </div>
     <button onclick="window.location.href='addstu.html'">Add Student</button>
+    <button onclick="window.location.href='index.html'">Logout</button> <!-- Redirect to login page -->
 </body>
 </html>
