@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
@@ -24,44 +24,27 @@
         const db = getFirestore(app);
 
         async function loadStudents() {
-            const teacherEmail = localStorage.getItem("userEmail");
-            const teacherQuery = query(collection(db, "students"), where("teacherEmail", "==", teacherEmail));
-            const querySnapshot = await getDocs(teacherQuery);
+            const email = localStorage.getItem("userEmail"); // Get the logged-in teacher's email
+            const studentQuery = query(collection(db, "students"), where("teacherEmail", "==", email));
+            const studentSnapshot = await getDocs(studentQuery);
 
             const studentList = document.getElementById("studentList");
-            studentList.innerHTML = ""; // Clear existing list
-
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const studentData = doc.data();
-                    const studentItem = document.createElement("div");
-                    studentItem.innerHTML = `
-                        <h3>${studentData.name}</h3>
-                        <p>Class: ${studentData.class}</p>
-                        <p>Email: ${studentData.email}</p>
-                        <button onclick="viewProfile('${studentData.email}')">View Profile</button>
-                    `;
-                    studentList.appendChild(studentItem);
-                });
-            } else {
-                studentList.innerHTML = "<p>No students found.</p>";
-            }
+            studentSnapshot.forEach((doc) => {
+                const student = doc.data();
+                const listItem = document.createElement("li");
+                listItem.textContent = `${student.name} (${student.email})`;
+                studentList.appendChild(listItem);
+            });
         }
 
-        function viewProfile(email) {
-            window.location.href = "profile.html?email=" + encodeURIComponent(email);
-        }
-
-        // Load students when the page is loaded
-        window.onload = loadStudents;
+        window.onload = loadStudents; // Load students when the page is opened
     </script>
 </head>
 <body>
     <h1>Teacher Dashboard</h1>
-    <div id="studentList">
-        <p>Loading students...</p>
-    </div>
+    <h2>Students under your charge:</h2>
+    <ul id="studentList"></ul>
     <button onclick="window.location.href='addstu.html'">Add Student</button>
-    <button onclick="window.location.href='index.html'">Logout</button> <!-- Redirect to login page -->
+    <button onclick="window.location.href='logout.html'">Logout</button>
 </body>
 </html>
