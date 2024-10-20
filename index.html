@@ -37,18 +37,16 @@
                 const querySnapshot = await getDocs(userQuery);
 
                 if (!querySnapshot.empty) {
-                    // User is a teacher
-                    localStorage.setItem("userEmail", email);
-                    window.location.href = "teach.html"; // Redirect to teacher page
+                    // User is a teacher, pass email in URL
+                    window.location.href = `teach.html?email=${encodeURIComponent(email)}`; // Redirect to teacher page
                 } else {
                     // User is not a teacher; check if they are a student
                     const studentQuery = query(collection(db, "students"), where("email", "==", email));
                     const studentSnapshot = await getDocs(studentQuery);
 
                     if (!studentSnapshot.empty) {
-                        // User is a student
-                        localStorage.setItem("userEmail", email);
-                        window.location.href = "student.html"; // Redirect to student page
+                        // User is a student, pass email in URL
+                        window.location.href = `student.html?email=${encodeURIComponent(email)}`; // Redirect to student page
                     } else {
                         alert("No user found with this email.");
                     }
