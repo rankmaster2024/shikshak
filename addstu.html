@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBhiboEoHCmdG4eHdBeUacUY6EKDZMiGj0",
@@ -20,26 +20,28 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
         async function addStudent(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
             const email = document.getElementById("email").value;
-            const classValue = document.getElementById("class").value;
-            const teacherEmail = localStorage.getItem("userEmail"); // Get the logged-in teacher's email
+            const password = document.getElementById("password").value;
+            const teacherEmail = localStorage.getItem("userEmail");
 
-            // Create a new student document
-            await setDoc(doc(db, "students", email), {
-                name: name,
-                email: email,
-                class: classValue,
-                teacherEmail: teacherEmail // Store the teacher's email for association
-            });
-
-            alert("Student added successfully!");
-            window.location.href = "teach.html"; // Redirect back to teacher dashboard
+            try {
+                await addDoc(collection(db, "students"), {
+                    name: name,
+                    email: email,
+                    password: password,
+                    teacherEmail: teacherEmail
+                });
+                alert("Student added successfully!");
+                window.location.href = "teach.html"; // Redirect back to the teacher's dashboard
+            } catch (error) {
+                console.error("Error adding student:", error);
+                alert("Error: " + error.message);
+            }
         }
     </script>
 </head>
@@ -55,12 +57,11 @@
             <input type="email" id="email" required>
         </div>
         <div>
-            <label for="class">Class:</label>
-            <input type="text" id="class" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
         </div>
         <button type="submit">Add Student</button>
+        <button type="button" onclick="window.location.href='teach.html'">Cancel</button>
     </form>
-    <button onclick="window.location.href='teach.html'">Back to Dashboard</button>
-    <button onclick="window.location.href='index.html'">Logout</button> <!-- Redirect to login page -->
 </body>
 </html>
